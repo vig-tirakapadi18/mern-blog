@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Categories from "../components/Categories";
 
 const Home = (): React.JSX.Element => {
   return (
@@ -59,6 +60,8 @@ const Home = (): React.JSX.Element => {
           </button>
         </Link>
       </div>
+
+      <Categories />
     </div>
   );
 };

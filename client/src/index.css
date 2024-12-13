@@ -19,3 +19,13 @@ body {
 .animated-btn {
   animation-duration: 10000ms;
 }
+
+.ql-container,
+.ql-toolbar,
+.ql-editor {
+  border: none !important;
+}
+
+.ql-toolbar {
+  border-bottom: 0.5px solid lightgray !important;
+}

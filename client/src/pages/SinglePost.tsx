@@ -5,6 +5,7 @@ import { AiFillInstagram } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import PostMenuActions from "../components/PostMenuActions";
 import Search from "../components/Search";
+import Comments from "../components/Comments";
 
 const SinglePost: FC = (): React.JSX.Element => {
   return (
@@ -156,6 +157,7 @@ const SinglePost: FC = (): React.JSX.Element => {
           <Search classNames="border-[1px] border-gray-300 w-[20rem] mb-4" />
         </div>
       </div>
+      <Comments />
     </div>
   );
 };

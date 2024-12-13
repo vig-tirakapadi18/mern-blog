@@ -1,8 +1,14 @@
 import React, { FC } from "react";
 
-const Search: FC = (): React.JSX.Element => {
+interface SearchProps {
+  classNames?: string;
+}
+
+const Search: FC<SearchProps> = ({classNames}: SearchProps): React.JSX.Element => {
   return (
-    <div className="bg-gray-100 rounded-full flex items-center gap-2 py-2 px-2 max-w-[12rem]">
+    <div
+      className={`bg-gray-100 rounded-full flex items-center gap-2 py-2 px-2 max-w-[12rem] ${classNames}`}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"

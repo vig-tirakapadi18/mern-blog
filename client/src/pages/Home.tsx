@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Categories from "../components/Categories";
+import FeaturedPosts from "../components/FeaturedPosts";
+import PostList from "../components/PostList";
 
 const Home = (): React.JSX.Element => {
   return (
@@ -62,6 +64,13 @@ const Home = (): React.JSX.Element => {
       </div>
 
       <Categories />
+
+      <FeaturedPosts />
+
+      <div>
+        <h1 className="my-8 text-2xl text-gray-500">Recent Posts</h1>
+        <PostList />
+      </div>
     </div>
   );
 };

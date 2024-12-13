@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SinglePost from "./pages/SinglePost";
 import MainLayout from "./layouts/MainLayout";
-import PostList from "./components/PostList";
+import AllPosts from "./pages/AllPosts";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/posts",
-        element: <PostList />,
+        element: <AllPosts />,
       },
       {
         path: "/write",

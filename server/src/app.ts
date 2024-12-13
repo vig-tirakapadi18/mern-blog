@@ -1,12 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import userRouter from "./routes/user.route";
 import postRouter from "./routes/post.route";
 import commentRouter from "./routes/comment.route";
-import mongoose from "mongoose";
+import webhookRouter from "./routes/webhook.route";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 dotenv.config();
+app.use(express.json());
+app.use(errorHandler);
 
 mongoose
   .connect(process.env.MONGO_CONN_STR as string)
@@ -16,6 +20,7 @@ mongoose
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/comments", commentRouter);
+app.use("/webhooks", webhookRouter);
 
 const PORT = process.env.PORT;
 

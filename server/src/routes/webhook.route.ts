@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { clearWebHook } from "../controllers/webhook.controller";
+import { clerkWebHook } from "../controllers/webhook.controller";
 import bodyParser from "body-parser";
 
 const router = Router();
 
-router.get(
+router.post(
   "/clerk",
   bodyParser.raw({ type: "application/json" }),
-  clearWebHook
+  clerkWebHook
 );
 
 export default router;

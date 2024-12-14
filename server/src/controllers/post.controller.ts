@@ -12,7 +12,19 @@ import {
   CODE_201,
   CREATE_SUCCESS,
   DELETE_SUCCESS,
+  ERROR_NO_AUTH,
+  CODE_400,
+  USER_NOT_FOUND,
 } from "../utils/constants";
+import User from "../models/user.model";
+
+declare global {
+  namespace Express {
+    interface Request {
+      auth?: any;
+    }
+  }
+}
 
 export const getAllPosts = async (
   req: Request,
@@ -49,9 +61,29 @@ export const createPost = async (
   res: Response,
   next: NextFunction
 ) => {
+  const clerkUserId = req.auth.userId;
+
+  if (!clerkUserId) return next(new ApiError(ERROR_NO_AUTH, CODE_400));
+
+  const user = await User.findOne({ clerkUserId });
+
+  if (!user) return next(new ApiError(USER_NOT_FOUND, CODE_404));
+
+  let slug = req.body.title.replace(/ /g, "-").toLowerCase();
+
+  let existingPost = await Post.findOne({ slug });
+
+  let counter = 2;
+
+  while (existingPost) {
+    slug = `${slug}-${counter}`;
+    existingPost = await Post.findOne({ slug });
+    counter++;
+  }
+
   const postBody = req.body;
 
-  const createdPost = await Post.create(postBody);
+  const createdPost = await Post.create({ user: user._id, slug, ...postBody });
 
   if (!createdPost) return next(new ApiError(INTERNAL_SERVER_ERROR, CODE_500));
 
@@ -65,11 +97,21 @@ export const deletePost = async (
   res: Response,
   next: NextFunction
 ) => {
-    const id = req.params.id;
+  const id = req.params.id;
 
-    const deletedPost = await Post.findByIdAndDelete(id);
+  const clerkUserId = req.auth.userId;
 
-    if (!deletedPost) return next(new ApiError(NO_DATA_FOUND, CODE_404));
+  if (!clerkUserId) return next(new ApiError(ERROR_NO_AUTH, CODE_400));
 
-    res.status(CODE_200).json(new ApiResponse(CODE_200, deletedPost, DELETE_SUCCESS));
+  const user = await User.findOne({ clerkUserId });
+
+  if (!user) return next(new ApiError(USER_NOT_FOUND, CODE_404));
+
+  const deletedPost = await Post.findByIdAndDelete({ _id: id, user: user._id });
+
+  if (!deletedPost) return next(new ApiError(NO_DATA_FOUND, CODE_404));
+
+  res
+    .status(CODE_200)
+    .json(new ApiResponse(CODE_200, deletedPost, DELETE_SUCCESS));
 };

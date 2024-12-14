@@ -1,11 +1,17 @@
-import { SignedOut } from "@clerk/clerk-react";
-import React, { FC, useState } from "react";
+import { SignedOut, useAuth } from "@clerk/clerk-react";
+import React, { FC, useEffect, useState } from "react";
 import { FaEnvelopeOpenText } from "react-icons/fa";
 import { IoClose, IoMenu } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
 const Navbar: FC = (): React.JSX.Element => {
   const [open, setOpen] = useState<boolean>(false);
+
+  const { getToken } = useAuth();
+
+  useEffect(() => {
+    getToken().then((token) => console.log(token));
+  }, [getToken]);
 
   return (
     <div className="w-full h-16 md:h-20 flex justify-between items-center">

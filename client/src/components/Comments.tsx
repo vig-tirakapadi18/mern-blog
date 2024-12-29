@@ -1,7 +1,32 @@
 import React, { FC } from "react";
 import Comment from "./Comment";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
-const Comments: FC = (): React.JSX.Element => {
+interface ICommentProps {
+  postId: string;
+}
+
+const fetchComments = async (postId: string) => {
+  const comments = await axios.get(
+    `${import.meta.env.VITE_API_URL as string}/comments/${postId}`
+  );
+
+  return comments.data;
+};
+
+const Comments: FC<ICommentProps> = ({
+  postId,
+}: ICommentProps): React.JSX.Element => {
+  const { isPending, error, data } = useQuery({
+    queryKey: ["comments", postId],
+    queryFn: () => fetchComments(postId),
+  });
+
+  if (isPending) return <h1>Loading comments...</h1>;
+  if (error) return <h1>Something went wrong: {error.message}</h1>;
+  if (!data) return <h1>No comments found!</h1>;
+
   return (
     <div className="flex flex-col gap-6 lg:w-3/5">
       <h1 className="text-2xl text-gray-500">Comments</h1>
@@ -16,11 +41,9 @@ const Comments: FC = (): React.JSX.Element => {
           Send
         </button>
       </div>
-      <Comment />
-      <Comment />
-      <Comment />
-      <Comment />
-      <Comment />
+      {data.map((comment: string) => (
+        <Comment key={crypto.randomUUID()} comment={comment} />
+      ))}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import Image from "../components/Image";
-import { Link, Links, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { AiFillInstagram } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import PostMenuActions from "../components/PostMenuActions";

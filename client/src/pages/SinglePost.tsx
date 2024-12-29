@@ -1,43 +1,59 @@
 import React, { FC } from "react";
 import Image from "../components/Image";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { AiFillInstagram } from "react-icons/ai";
 import { FaFacebook } from "react-icons/fa";
 import PostMenuActions from "../components/PostMenuActions";
 import Search from "../components/Search";
 import Comments from "../components/Comments";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { format } from "timeago.js";
+
+const fetchPost = async (slug: string) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts/${slug}`);
+
+  return res.data;
+};
 
 const SinglePost: FC = (): React.JSX.Element => {
+  const { slug } = useParams();
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["post", slug],
+    queryFn: () => fetchPost(slug as string),
+  });
+
+  if (isPending) return <h1>Loading post...</h1>;
+  if (error) return <h1>Something went wrong: {error.message}</h1>;
+  if (!data) return <h1>Post not found!</h1>;
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex gap-8">
         <div className="lg:w-3/5 flex flex-col gap-8">
           <h1 className="font-semibold text-xl md:text-3xl xl:text-4xl 2xl:text-5xl">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga sequi
-            dolore doloremmt-2que ipsum enim excepturi.
+            {data.title}
           </h1>
           <span className="text-gray-400">
             Written by{" "}
             <Link to="/" className="font-semibold text-emerald-800">
-              Vig VT
+              {data.user.username}
             </Link>{" "}
             on{" "}
             <Link to="/" className="font-semibold text-emerald-800">
-              Web Design
+              {data.category}
             </Link>{" "}
-            2 days ago
+            {format(data.createdAt)}
           </span>
-          <p className="text-gray-500">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis
-            necessitatibus magnam commodi ipsam itaque adipisci illo pariatur
-            natus, doloremque quisquam nam, reiciendis earum laboriosam sit
-            veritatis magni minima? Repellat rem nostrum iure nulla aut! Commodi
-            laborum perspiciatis praesentium cum voluptatum?
-          </p>
+          <p className="text-gray-500">{data.description}</p>
         </div>
-        <div className="hidden lg:block w-2/5">
-          <Image src="blog5.webp" alt="Beach" className="rounded-2xl" />
-        </div>
+        {data.user.img && (
+          <div className="hidden lg:block w-2/5">
+            <Image src={data.user.img} alt="Beach" className="rounded-2xl" />
+            <Link to={"/"} className="text-emerald-800">{data.user.username}</Link>
+          </div>
+        )}
       </div>
       <div className=" flex flex-col md:flex-row gap-8">
         <div className="lg:text-lg flex flex-col gap-6 text-justify">

@@ -35,13 +35,26 @@ export const getAllPosts = async (
   res: Response,
   next: NextFunction
 ) => {
-  const posts = await Post.find();
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 5;
+
+  const skip = (page - 1) * limit;
+
+  const posts = await Post.find()
+    .populate("user", "username")
+    .limit(limit)
+    .skip(skip);
 
   if (!posts) return next(new ApiError(NO_DATA_FOUND, CODE_404));
 
+  const totalPosts = await Post.countDocuments();
+  const hasMorePosts = page * limit < totalPosts;
+
   res
     .status(CODE_200)
-    .json(new ApiResponse(CODE_200, posts, DATA_FETCH_SUCCESS));
+    .json(
+      new ApiResponse(CODE_200, { posts, hasMorePosts }, DATA_FETCH_SUCCESS)
+    );
 };
 
 export const getPostBySlug = async (
@@ -51,7 +64,7 @@ export const getPostBySlug = async (
 ) => {
   const slug = req.params.slug;
 
-  const post = await Post.findOne({ slug });
+  const post = await Post.findOne({ slug }).populate("user", "username, img");
 
   if (!post) return next(new ApiError(NO_DATA_FOUND, CODE_404));
 

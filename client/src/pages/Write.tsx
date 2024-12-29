@@ -1,13 +1,16 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import React, { FC, FormEvent, useState } from "react";
+import React, { FC, FormEvent, useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FaImage, FaVideo } from "react-icons/fa";
+import Upload, { IImageResponse } from "../components/Upload";
 
 interface IPost {
+  img?: string;
   title: string;
   category: string;
   description: string;
@@ -17,10 +20,27 @@ interface IPost {
 
 const Write: FC = (): React.JSX.Element => {
   const [content, setContent] = useState<string>("");
+  const [cover, setCover] = useState<IImageResponse>();
+  const [img, setImg] = useState<{ url: string }>();
+  const [video, setVideo] = useState<{ url: string }>();
+  const [progress, setProgress] = useState<number>();
   const { isLoaded, isSignedIn } = useUser();
   const { getToken } = useAuth();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    img && setContent((prev) => prev + `<p><img src="${img.url}" /></p>`);
+  }, [img]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    video &&
+      setContent(
+        (prev) => prev + `<p><iframe class="ql-video" src="${video.url}"/></p>`
+      );
+  }, [video]);
 
   const mutation = useMutation<IPost, Error, IPost>({
     mutationFn: async (newPost) => {
@@ -49,6 +69,7 @@ const Write: FC = (): React.JSX.Element => {
     const formData = new FormData(event.currentTarget);
 
     const newPost: IPost = {
+      img: cover?.filePath || "",
       title: formData.get("title") as string,
       category: formData.get("category") as string,
       description: formData.get("description") as string,
@@ -66,9 +87,12 @@ const Write: FC = (): React.JSX.Element => {
         action=""
         className="flex flex-col gap-6 flex-1 mb-6"
       >
-        <button className="p-2 shadow-md rounded-md text-sm text-gray-500 bg-white">
-          Add a cover image
-        </button>
+        <Upload type="image" setProgress={setProgress} setData={setCover}>
+          <button className="p-2 shadow-md rounded-md text-sm text-gray-500 bg-white">
+            Add a cover image
+          </button>
+        </Upload>
+        <Upload setProgress={setProgress} setData={setCover} />
         <input
           className="text-4xl font-semibold bg-transparent outline-none"
           type="text"
@@ -98,17 +122,29 @@ const Write: FC = (): React.JSX.Element => {
           placeholder="A Short Description"
           className="p-2 rounded-md shadow-md"
         />
-        <ReactQuill
-          theme="snow"
-          className="flex-1 bg-white rounded-md"
-          onChange={setContent}
-        />
+        <div className="flex">
+          <div className="flex flex-col gap-2 mr-2">
+            <Upload type="image" setProgress={setProgress} setData={setImg}>
+              <FaImage color="dodgerblue" />
+            </Upload>
+            <Upload type="video" setProgress={setProgress} setData={setVideo}>
+              <FaVideo color="#f43f5e" />
+            </Upload>
+          </div>
+          <ReactQuill
+            theme="snow"
+            className="flex-1 bg-white rounded-md h-[45vh]"
+            onChange={setContent}
+            readOnly={0 < progress! && progress! < 100}
+          />
+        </div>
         <button
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || (0 < progress! && progress! < 100)}
           className="bg-emerald-800 w-[10rem] text-white font-semibold py-2 rounded-md cursor-pointer hover:opacity-95 disabled:bg-emerald-400 disabled:cursor-not-allowed"
         >
           {mutation.isPending ? "Loading..." : "Send"}
         </button>
+        {progress && <span>{`Progress ${progress}%`}</span>}
         {mutation.isError && (
           <span className="text-rose-500 font-semibold">
             {mutation.error.message}!

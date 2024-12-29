@@ -5,7 +5,7 @@ import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export interface IPostData {
-  _id?: string
+  _id?: string;
   img?: string;
   title?: string;
   slug?: string;
@@ -28,13 +28,7 @@ const fetchPosts = async (pageParam: number) => {
 const PostList: FC<{
   pageParam: number;
 }> = ({ pageParam }: { pageParam: number }): React.JSX.Element => {
-  const {
-    data,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    status,
-  } = useInfiniteQuery({
+  const { data, error, fetchNextPage, hasNextPage, status } = useInfiniteQuery({
     queryKey: ["posts"],
     queryFn: () => fetchPosts(pageParam),
     initialPageParam: 1,
@@ -48,12 +42,11 @@ const PostList: FC<{
   if (status === "error")
     return <div>An Error has occurred {error.message}</div>;
 
-  console.log(data);
-  const allPosts = data?.pages?.flatMap((page) => page.posts);
+  const allPosts = data?.pages?.flatMap((page) => page.posts) ?? [];
 
   return (
     <InfiniteScroll
-      dataLength={allPosts!.length} //This is important field to render the next data
+      dataLength={allPosts.length}
       next={fetchNextPage}
       hasMore={!!hasNextPage}
       loader={<h4>Loading More Posts...</h4>}
@@ -64,7 +57,7 @@ const PostList: FC<{
       }
     >
       {allPosts?.map((post) => (
-        <PostListItem key={post._id} post={post} />
+        <PostListItem key={crypto.randomUUID()} post={post} />
       ))}
     </InfiniteScroll>
   );

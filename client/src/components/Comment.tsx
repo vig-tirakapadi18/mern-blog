@@ -1,26 +1,36 @@
 import React, { FC } from "react";
 import Image from "./Image";
+import { format } from "timeago.js";
 
-const Comment: FC = (): React.JSX.Element => {
+const Comment: FC<{
+  description: string;
+  user: { username: string };
+  img: string;
+  createdAt: string;
+}> = ({
+  description,
+  user: { username },
+  img,
+  createdAt,
+}: {
+  description: string;
+  user: { username: string };
+  img: string;
+  createdAt: string;
+}): React.JSX.Element => {
   return (
     <div className="p-4 bg-slate-50 rounded-xl mb-8">
       <div className="flex items-center gap-4">
         <Image
-          src="blog5.webp"
+          src={img}
           className="w-10 h-10 rounded-full object-cover border-[2px] border-emerald-800"
           alt="Profile"
         />
-        <span className="font-semibold text-emerald-800">
-          Vig VT
-        </span>
-        <span className="text-sm text-gray-500">2 days ago</span>
+        <span className="font-semibold text-emerald-800">{username}</span>
+        <span className="text-sm text-gray-500">{format(createdAt)}</span>
       </div>
       <div className="mt-4">
-        <p>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Mollitia in
-          temporibus maxime natus est enim dolorem, consequuntur animi suscipit
-          repellat earum voluptatibus vero numquam assumenda!
-        </p>
+        <p>{description}</p>
       </div>
     </div>
   );

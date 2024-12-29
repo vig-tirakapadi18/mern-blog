@@ -8,6 +8,7 @@ import commentRouter from "./routes/comment.route";
 import webhookRouter from "./routes/webhook.route";
 import { errorHandler } from "./middlewares/errorHandler";
 import { clerkMiddleware } from "@clerk/express";
+import { imagekitMiddleware } from "./middlewares/imagekit";
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,8 @@ app.use("/webhooks", webhookRouter);
 
 app.use(express.json());
 app.use(errorHandler);
+
+app.use(imagekitMiddleware);
 
 // app.get("/auth-state", (req: Request, res: Response) => {
 //   const authState = req.auth;

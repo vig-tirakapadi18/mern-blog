@@ -17,6 +17,10 @@ import {
   USER_NOT_FOUND,
 } from "../utils/constants";
 import User from "../models/user.model";
+import ImageKit from "imagekit";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 declare global {
   namespace Express {
@@ -114,4 +118,18 @@ export const deletePost = async (
   res
     .status(CODE_200)
     .json(new ApiResponse(CODE_200, deletedPost, DELETE_SUCCESS));
+};
+
+const imagekit = new ImageKit({
+  urlEndpoint: process.env.IK_URL_ENDPOINT as string,
+  publicKey: process.env.IK_PUBLIC_KEY as string,
+  privateKey: process.env.IK_PRIVATE_KEY as string,
+});
+
+export const uploadAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = imagekit.getAuthenticationParameters();
 };

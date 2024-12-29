@@ -51,7 +51,9 @@ const SinglePost: FC = (): React.JSX.Element => {
         {data.user.img && (
           <div className="hidden lg:block w-2/5">
             <Image src={data.user.img} alt="Beach" className="rounded-2xl" />
-            <Link to={"/"} className="text-emerald-800">{data.user.username}</Link>
+            <Link to={"/"} className="text-emerald-800">
+              {data.user.username}
+            </Link>
           </div>
         )}
       </div>
@@ -173,7 +175,7 @@ const SinglePost: FC = (): React.JSX.Element => {
           <Search classNames="border-[1px] border-gray-300 w-[20rem] mb-4" />
         </div>
       </div>
-      <Comments />
+      <Comments postId={data._id} />
     </div>
   );
 };

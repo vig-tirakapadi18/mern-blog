@@ -12,6 +12,7 @@ export const WEBHOOK_VFN_FAIL: string = "Webhook verification failed!";
 export const WEBHOOK_RECEIVE_FAIL: string = "Failed to receive webhook!";
 export const ERROR_NO_AUTH: string = "Not authenticated!";
 export const USER_NOT_FOUND: string = "User not found!";
+export const FAILED_TO_CREATE: string = "Failed to create!";
 
 export const DATA_FETCH_SUCCESS: string = "Data fetched successfully!";
 export const CREATE_SUCCESS: string = "Created successfully!";
